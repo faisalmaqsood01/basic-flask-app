@@ -1,0 +1,58 @@
+language: python
+python:
+  - "2.7"
+  - "3.7"
+# - "3.7" is handled in 'Test' job using xenial as Python 3.7 is not available for trusty.
+# - "3.8" is handled in 'Test' job using xenial as Python 3.8 is not available for trusty.
+  - "pypy"
+  - "pypy3"
+install: "pip install -r requirements.txt"
+script: "python -m pytest"
+after_success:
+  - coveralls
+
+# Linting and Integration tests need to run first to reset the PR build status to pending.
+stages:
+  - 'Source Clear'
+  - 'Lint markdown files'
+  - 'Linting'
+  - 'Integration tests'
+  - 'Full stack production tests'
+  - 'Test'
+
+jobs:
+  include:
+    - stage: 'Lint markdown files'
+      os: linux
+      language: generic
+      install: gem install awesome_bot
+      script:
+        - find . -type f -name '*.md' -exec awesome_bot {} \;
+      notifications:
+        email: false
+
+    - stage: 'Linting'
+      language: python
+      python: "2.7"
+      # flake8 version should be same as the version in requirements/test.txt
+      # to avoid lint errors on CI
+      install: "pip install flake8==3.6.0"
+      script: "flake8"
+      after_success: travis_terminate 0
+
+    - stage: 'Test'
+      dist: xenial
+      python: "3.7"
+    - stage: 'Test'
+      dist: xenial
+      python: "3.8"
+
+    - stage: 'Source Clear'
+      if: type = cron
+      addons:
+        srcclr: true
+      before_install: skip
+      install: skip
+      before_script: skip
+      script: skip
+      after_success: skip

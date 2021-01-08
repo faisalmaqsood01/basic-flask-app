@@ -1,3 +1,4 @@
 Flask==1.1.1
 pytest>=4.6.0
-optimizely-sdk[security]==3.7.1
+cryptography==2.8
+optimizely-sdk==3.7.1

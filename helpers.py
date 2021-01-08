@@ -13,7 +13,7 @@ def setup_optimizely():
 
 
 def optimizely_experiment(optimizely_client, user_id):
-    variation = optimizely_client.activate('explore_python_test', '85885')
+    variation = optimizely_client.activate('explore_python_test', user_id)
 
     if variation == 'small':
         logging.info('Small Variation: {}'.format(variation))

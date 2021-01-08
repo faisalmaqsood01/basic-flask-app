@@ -17,10 +17,9 @@ def hello():
 @app.route('/optimizely/experiment')
 def opt_experiment():
     optimizely_client = setup_optimizely()
-    user_id = 1234
+    user_id = request.args.get('user_id', None)
     explore_experiment = optimizely_experiment(optimizely_client, user_id)
-    print('explore_experiment', explore_experiment)
-    return "Hello optimizely"
+    return "Order {} Pizza".format(explore_experiment)
 
 
 @app.route('/optimizely/feature')
@@ -29,6 +28,7 @@ def opt_feature():
     user_id = request.args.get('user_id', None)
     optimizely_client = setup_optimizely()
     explore_opt = optimizely_feature(optimizely_client, user_id, is_purchase)
+    optimizely_client.track('purchase', user_id)
     return explore_opt
 
 
